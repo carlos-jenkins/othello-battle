@@ -1,9 +1,8 @@
 About
 =====
 
-Othello-Battle is a 0 players Othello game written in Erlang
-made to test MinMax algorithms against a known opponent with
-unknown implementation (client.beam).
+Othello-Battle is a 0 players Othello game written in Erlang made to test MiniMax 
+algorithms against a known opponent with unknown implementation (client.beam).
 
 
 Screenshots
@@ -18,7 +17,12 @@ How to use
     ``1> c(server.erl).``
 - Run start() from the server module:  
     ``2> server:start().``
-- FIXME...
+- Create and connect opponent:  
+    ``3> client:start().``  
+    ``4> client:connect(white).``
+- Create and connect the known implementation:  
+    ``3> clientk:start().``  
+    ``4> clientk:connect(black).``
 - Enjoy :)
 
 
