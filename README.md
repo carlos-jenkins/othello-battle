@@ -8,7 +8,10 @@ algorithms against a known opponent with unknown implementation (client.beam).
 Screenshots
 ===========
 
-![Othello display](https://raw.github.com/carlos-jenkins/othello-battle/master/media/display.png "Othello display")
+![Othello display](https://raw.github.com/carlos-jenkins/othello-battle/master/docs/report/images/display.png "Othello display")
+
+![Othello game](https://raw.github.com/carlos-jenkins/othello-battle/master/docs/report/images/game.png "Othello game")
+
 
 How to use
 ==========
@@ -21,9 +24,11 @@ How to use
     ``3> client:start().``  
     ``4> client:connect(white).``
 - Create and connect the known implementation:  
-    ``3> clientk:start().``  
-    ``4> clientk:connect(black).``
+    ``3> c(player.erl).``  
+    ``4> player:start(black).``
 - Enjoy :)
+
+This program was created in Erlang R15B02.
 
 
 License
