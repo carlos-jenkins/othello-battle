@@ -225,7 +225,16 @@ conectar el cliente a las blancas y el jugador a las negras.
 
 = Conclusiones =[conclusiones]
 
-- FooBar
+- Cómo se pudo observar en las pruebas realizadas un nivel más de profundidad aumenta considerablemente el 
+  tiempo de ejecución del algoritmo, incluso con poda alfa-beta.
+
+- Para saber cuantos niveles hacer se pueden tomar dos enfoques que se mencionan a continuación. Se implementó 
+  una versión dummy de la primera, pero existe muchas posibilidades de mejorar el rendimiento del algoritmo
+  considerando éstos enfoques.
+ - Predicción de duración: es una función que mapea el tiempo disponible con un número entero con la profundidad
+   a explorar. Dicha función no es nada trivial y supone integrales y derivadas de segundo grado.
+ - Profundidad adaptativa: permite explorar el árbol de posiciones de forma que si ha terminado un nivel y no se ha
+   vencido el tiempo continúe con el siguiente nivel.
 
 
 %tex% ''' \newpage
