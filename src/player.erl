@@ -13,9 +13,9 @@
 
 % Map time to depth
 depth(Time) when Time == 0 -> 7;
-depth(Time) when Time => 1, Time < 3 -> 3;
-depth(Time) when Time => 3, Time < 120 -> 5;
-depth(Time) when Time => 120 -> 7.
+depth(Time) when Time >= 1, Time < 3 -> 3;
+depth(Time) when Time >= 3, Time < 120 -> 5;
+depth(Time) when Time >= 120 -> 7.
 
 % Select the value of each player
 color(white) ->  1;
@@ -73,13 +73,21 @@ wait_turn(Color) ->
                 Border = State#game.border,
                 Depth = depth(State#game.seconds),
                 {Play, _} = alpha_beta(Depth, Border, Board, -110000, 110000, Color),
-                Veamos = othello:check_move(Play, Board, othello:directions(), color(Color)),
                 if
-                    Veamos ->
-                        oserver ! {move, self(), {Color, Play}};
+                    Play == -1 ->
+                        White = pieces(white,Board),
+                        Black = pieces(black,Board),
+                        io:format("Blancas: ~w~n", [White]),
+                        io:format("Negras: ~w~n", [Black]);
                     true ->
-                        io:format("Dead Lock~n"),
-                        oserver ! {change_player}
+                        LetsSee= othello:check_move(Play, Board, othello:directions(), color(Color)),
+                        if
+                            LetsSee->
+                                oserver ! {move, self(), {Color, Play}};
+                            true ->
+                                io:format("Dead Lock~n"),
+                                oserver ! {change_player}
+                        end
                 end,
                 %io:format("~w~n", [Play]),
                 wait_turn(Color);
@@ -160,9 +168,9 @@ pieces(_, _, _, Count) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 possible_moves([F|T], Board, Directions, Color, Moves) ->
-    Veamos = othello:check_move(F, Board, Directions, color(Color)),
+    LetsSee= othello:check_move(F, Board, Directions, color(Color)),
     if
-        Veamos -> possible_moves(T, Board, Directions, Color, lists:append(Moves, [F]));
+        LetsSee-> possible_moves(T, Board, Directions, Color, lists:append(Moves, [F]));
         true -> possible_moves(T, Board, Directions, Color, Moves)
     end;
 possible_moves([], _, _, _, Moves) -> Moves.
@@ -202,7 +210,7 @@ eval_corner(MyCol, OtCol, Score, Board) ->
         eval_corner_2(MyCol, OtCol, Score3, Board);
     OtCol ->
         Score1 = verify_line(12, OtCol, Score , Board, -50,  1, 19),
-        Score2 = verify_line(12, MyCol, Score1, Board, -50, 11, 89),
+        Score2 = verify_line(12, OtCol, Score1, Board, -50, 11, 89),
         Score3 = verify_line(12, OtCol, Score2, Board, -50, 10, 82),
         eval_corner_2(MyCol, OtCol, Score3, Board);
     _ ->
@@ -218,7 +226,7 @@ eval_corner_2(MyCol, OtCol, Score, Board) ->
         eval_corner_3(MyCol, OtCol, Score3, Board);
     OtCol ->
         Score1 = verify_line(19, OtCol, Score , Board, -50,  -1, 12),
-        Score2 = verify_line(19, MyCol, Score1, Board, -50,   9, 82),
+        Score2 = verify_line(19, OtCol, Score1, Board, -50,   9, 82),
         Score3 = verify_line(19, OtCol, Score2, Board, -50,  10, 89),
         eval_corner_3(MyCol, OtCol, Score3, Board);
     _ ->
@@ -234,7 +242,7 @@ eval_corner_3(MyCol, OtCol, Score, Board) ->
         eval_corner_4(MyCol, OtCol, Score3, Board);
     OtCol ->
         Score1 = verify_line(82, OtCol, Score,  Board, -50,   1, 89),
-        Score2 = verify_line(82, MyCol, Score1, Board, -50,  -9, 19),
+        Score2 = verify_line(82, OtCol, Score1, Board, -50,  -9, 19),
         Score3 = verify_line(82, OtCol, Score2, Board, -50, -10, 12),
         eval_corner_4(MyCol, OtCol, Score3, Board);
     _ ->
@@ -249,7 +257,7 @@ eval_corner_4(MyCol, OtCol, Score, Board) ->
         verify_line(89, MyCol, Score2, Board,  50, -10, 19);
     OtCol ->
         Score1 = verify_line(89, OtCol, Score,  Board, -50,  -1, 82),
-        Score2 = verify_line(89, MyCol, Score1, Board, -50, -11, 12),
+        Score2 = verify_line(89, OtCol, Score1, Board, -50, -11, 12),
         verify_line(89, OtCol, Score2, Board, -50, -10, 19);
     _ ->
         Score
